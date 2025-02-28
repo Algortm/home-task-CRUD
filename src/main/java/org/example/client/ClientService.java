@@ -1,11 +1,9 @@
 package org.example.client;
-
 import org.example.db.DataBase;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,22 +14,20 @@ public class ClientService {
         this.connection = DataBase.getInstance().getConnection();
     }
 
+    public static void checkName(String name) throws IllegalArgumentException {
+        if(name.length()>1000 || name.length()<=2)
+        {
+            throw new IllegalArgumentException("Incorrect input name: " + name);
+        }
+    }
+
     public long create(String name) {
         try{
-            CheckValideNameClient.checkName(name);
+            checkName(name);
             String sqlCreate = "INSERT INTO client (NAME) VALUES (?)";
-            String sqlSelectNewId = "SELECT * FROM client ORDER BY id DESC LIMIT 1";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sqlCreate)) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sqlCreate, Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setString(1, name);
-                preparedStatement.executeUpdate();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sqlSelectNewId)) {
-                ResultSet result = preparedStatement.executeQuery();
-                while (result.next()) {
-                    return result.getLong("id");
-                }
+                return preparedStatement.executeUpdate();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -49,7 +45,6 @@ public class ClientService {
             while(result.next()){
                 return result.getString("name");
             }
-
         }catch (Exception ex){
             ex.printStackTrace();
         }
@@ -58,7 +53,7 @@ public class ClientService {
 
     public void setName(long id, String name){
         try{
-            CheckValideNameClient.checkName(name);
+            checkName(name);
             String sqlUpdate = "UPDATE client SET name=? WHERE id LIKE ?";
             try(PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdate)){
                 preparedStatement.setString(1, name);
@@ -71,6 +66,7 @@ public class ClientService {
             ex.printStackTrace();
         }
     }
+
     public void deleteById(long id){
         String sqlDelete = "DELETE FROM client WHERE id LIKE ?";
         try(PreparedStatement preparedStatement = connection.prepareStatement(sqlDelete)){
@@ -80,6 +76,7 @@ public class ClientService {
             ex.printStackTrace();
         }
     }
+
     public List<Client> listAll(){
         String sqlSelectAll = "SELECT id, name FROM client";
         List<Client> arrayListOfClients = new ArrayList<>();
