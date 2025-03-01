@@ -19,7 +19,6 @@ public class DataBase {
     public static DataBase getInstance(){return INSTANCE;}
 
     public Connection getConnection(){
-        System.out.println(this.connection != null ? "Connect to data base is successful" : "Don`t connect to data base");
         return connection;
     }
 

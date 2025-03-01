@@ -1,9 +1,7 @@
 package org.example;
-
 import org.example.client.Client;
 import org.example.client.ClientService;
 import org.example.db.DataBase;
-
 import java.util.List;
 
 public class Main {
