@@ -16,21 +16,21 @@ public class ClientService {
     }
 
     public static boolean checkName(String name){
-        return name.length()<1000 || name.length()>2;
+        return name.length() < 1000 || name.length() > 2;
     }
 
     public long create(String name) throws IllegalArgumentException {
         if(!checkName(name)){
             throw new IllegalArgumentException("Incorrect input name: " + name);
         }
-        long id = -1;
+        long id;
         String sqlCreate = "INSERT INTO client (NAME) VALUES (?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlCreate, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, name);
             preparedStatement.executeUpdate();
             ResultSet rs = preparedStatement.getGeneratedKeys();
             rs.next();
-            id = rs.getLong("id");
+             id = rs.getLong("id");
         } catch (Exception ex) {
             ex.printStackTrace();
         }

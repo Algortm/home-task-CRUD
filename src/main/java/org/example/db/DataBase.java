@@ -6,7 +6,7 @@ import java.sql.DriverManager;
 public class DataBase {
     public static final String DATA_BASE_URL = "jdbc:h2:./test";
     private static final DataBase INSTANCE = new DataBase();
-    private Connection connection = null;
+    private Connection connection;
 
     private DataBase(){
         try{
