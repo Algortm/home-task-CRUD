@@ -9,7 +9,6 @@ import java.util.List;
 
 public class ClientService {
     private Connection connection;
-    private Client client;
     private List<Client> clientsAll = new ArrayList<>();
 
     public ClientService() {
@@ -17,43 +16,40 @@ public class ClientService {
     }
 
     public static boolean checkName(String name){
-        if(name.length()>1000 || name.length()<=2)
-        {
-            return false;
-        }else{
-            return true;
-        }
+        return name.length()<1000 || name.length()>2;
     }
 
     public long create(String name) throws IllegalArgumentException {
         if(!checkName(name)){
             throw new IllegalArgumentException("Incorrect input name: " + name);
         }
+        long id = -1;
         String sqlCreate = "INSERT INTO client (NAME) VALUES (?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlCreate, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, name);
             preparedStatement.executeUpdate();
             ResultSet rs = preparedStatement.getGeneratedKeys();
             rs.next();
-            this.client = new Client(rs.getLong("id"), name);
+            id = rs.getLong("id");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return client.getId();
+        return id;
     }
 
     public String getById(long id){
         String sqlSelect = "SELECT name FROM client WHERE id LIKE ?";
+        String name = "";
         try(PreparedStatement preparedStatement = connection.prepareStatement(sqlSelect)){
             preparedStatement.setLong(1, id);
             ResultSet result = preparedStatement.executeQuery();
             while(result.next()){
-                this.client = new Client(id, result.getString("name"));
+                name = result.getString("name");
             }
         }catch (Exception ex){
             ex.printStackTrace();
         }
-        return client.getName();
+        return name;
     }
 
     public void setName(long id, String name) throws IllegalArgumentException{

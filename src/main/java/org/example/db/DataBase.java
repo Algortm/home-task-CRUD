@@ -16,7 +16,9 @@ public class DataBase {
         }
     }
 
-    public static DataBase getInstance(){return INSTANCE;}
+    public static DataBase getInstance(){
+        return INSTANCE;
+    }
 
     public Connection getConnection(){
         return connection;
